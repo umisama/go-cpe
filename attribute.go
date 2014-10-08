@@ -5,15 +5,16 @@ import (
 	"regexp"
 )
 
-type Part rune
+type PartAttr rune
 
 var (
-	Application      = Part('a')
-	OperationgSystem = Part('o')
-	Hardware         = Part('h')
+	Application      = PartAttr('a')
+	OperationgSystem = PartAttr('o')
+	Hardware         = PartAttr('h')
+	PartNotSet       = PartAttr(0x00)
 )
 
-func (m Part) String() string {
+func (m PartAttr) String() string {
 	if m.IsValid() {
 		return string(m)
 	} else {
@@ -21,7 +22,7 @@ func (m Part) String() string {
 	}
 }
 
-func (m Part) IsValid() bool {
+func (m PartAttr) IsValid() bool {
 	switch m {
 	case Application, OperationgSystem, Hardware:
 		return true
@@ -30,12 +31,15 @@ func (m Part) IsValid() bool {
 	}
 }
 
-type stringAttr struct {
-	raw    string
-	setted bool
+func (m PartAttr) IsEmpty() bool {
+	return m == PartNotSet
 }
 
-func newStringAttr(str string) (stringAttr, error){
+type stringAttr struct {
+	raw    string
+}
+
+func newStringAttr(str string) (stringAttr, error) {
 	if !isValidAsStringAttr(str) {
 		return stringAttr{}, cpeerr{reason: err_invalid_attribute_str}
 	}
@@ -44,46 +48,40 @@ func newStringAttr(str string) (stringAttr, error){
 	}, nil
 }
 
-func newEmptyStringAttr(str string) stringAttr {
-	return stringAttr{
-		setted: false,
-	}
-}
-
 func (s stringAttr) Raw() string {
 	return s.raw
 }
 
 func (s stringAttr) WFNEncode() string {
 	encoded := s.raw
-	for key, repl := range map[string]string {
-		"-" : "\\-",
-		"#" : "\\#",
-		"\\$" : "\\$",
-		"%" : "\\%",
-		"&" : "\\&",
-		"'" : "\\'",
-		"\\(" : "\\(",
-		"\\)" : "\\)",
-		"\\+" : "\\+",
-		"," : "\\,",
-		"\\." : "\\.",
-		"/" : "\\/",
-		":" : "\\:",
-		";" : "\\;",
-		"<" : "\\<",
-		"=" : "\\=",
-		">" : "\\>",
-		"@" : "\\@",
-		"!" : "\\!",
-		"\\[" : "\\[",
-		"\\]" : "\\]",
-		"\\^" : "\\^",
-		"`" : "\\`",
-		"{" : "\\{",
-		"}" : "\\}",
-		"\\|" : "\\|",
-		"~" : "\\~",
+	for key, repl := range map[string]string{
+		"-":   "\\-",
+		"#":   "\\#",
+		"\\$": "\\$",
+		"%":   "\\%",
+		"&":   "\\&",
+		"'":   "\\'",
+		"\\(": "\\(",
+		"\\)": "\\)",
+		"\\+": "\\+",
+		",":   "\\,",
+		"\\.": "\\.",
+		"/":   "\\/",
+		":":   "\\:",
+		";":   "\\;",
+		"<":   "\\<",
+		"=":   "\\=",
+		">":   "\\>",
+		"@":   "\\@",
+		"!":   "\\!",
+		"\\[": "\\[",
+		"\\]": "\\]",
+		"\\^": "\\^",
+		"`":   "\\`",
+		"{":   "\\{",
+		"}":   "\\}",
+		"\\|": "\\|",
+		"~":   "\\~",
 	} {
 		encoded = regexp.MustCompile(key).ReplaceAllString(encoded, repl)
 	}
@@ -96,7 +94,7 @@ func (s stringAttr) UrlEncode() string {
 }
 
 func (s stringAttr) IsEmpty() bool {
-	return !s.setted
+	return s.raw == ""
 }
 
 func isValidAsStringAttr(str string) bool {

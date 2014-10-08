@@ -5,7 +5,7 @@ import (
 )
 
 type Item struct {
-	part       Part
+	part       PartAttr
 	vendor     stringAttr
 	product    stringAttr
 	version    stringAttr
@@ -18,7 +18,13 @@ type Item struct {
 	other      stringAttr
 }
 
-func (i *Item) SetPart(p Part) error {
+func NewItem() *Item {
+	return &Item {
+		part : PartNotSet,
+	}
+}
+
+func (i *Item) SetPart(p PartAttr) error {
 	if !p.IsValid() {
 		return cpeerr{reason: err_invalid_type, attr: []interface{}{p, "part"}}
 	}
@@ -27,7 +33,7 @@ func (i *Item) SetPart(p Part) error {
 	return nil
 }
 
-func (i *Item) Part() Part {
+func (i *Item) Part() PartAttr {
 	return i.part
 }
 
