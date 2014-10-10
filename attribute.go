@@ -3,15 +3,31 @@ package cpe
 import (
 	"net/url"
 	"regexp"
+	"strings"
 )
 
+type Attribute interface {
+	WFNEncoded() string
+	UrlEncoded() string
+	IsEmpty() bool
+	IsValid() bool
+}
+
 type PartAttr rune
+
+type StringAttr struct {
+	raw   string
+	isAny bool
+	isNa  bool
+}
 
 var (
 	Application      = PartAttr('a')
 	OperationgSystem = PartAttr('o')
 	Hardware         = PartAttr('h')
 	PartNotSet       = PartAttr(0x00)
+	Any              = StringAttr{isAny: true}
+	Na               = StringAttr{isNa: true}
 )
 
 func (m PartAttr) String() string {
@@ -20,6 +36,14 @@ func (m PartAttr) String() string {
 	} else {
 		panic("\"%v\" is not valid as part attribute.")
 	}
+}
+
+func (m PartAttr) WFNEncoded() string {
+	return "\"" + m.String() + "\""
+}
+
+func (m PartAttr) UrlEncoded() string {
+	return "\"" + m.String() + "\""
 }
 
 func (m PartAttr) IsValid() bool {
@@ -35,25 +59,24 @@ func (m PartAttr) IsEmpty() bool {
 	return m == PartNotSet
 }
 
-type stringAttr struct {
-	raw    string
-}
-
-func newStringAttr(str string) (stringAttr, error) {
-	if !isValidAsStringAttr(str) {
-		return stringAttr{}, cpeerr{reason: err_invalid_attribute_str}
-	}
-	return stringAttr{
+func NewStringAttr(str string) StringAttr {
+	return StringAttr{
 		raw: str,
-	}, nil
+	}
 }
 
-func (s stringAttr) Raw() string {
+func (s StringAttr) Raw() string {
 	return s.raw
 }
 
-func (s stringAttr) WFNEncode() string {
-	encoded := s.raw
+func (s StringAttr) WFNEncoded() string {
+	if s.isNa {
+		return "NA"
+	} else if s.isAny {
+		return "ANY"
+	}
+
+	encoded := strings.Replace(s.raw, "\\", "\\\\", -1)
 	for key, repl := range map[string]string{
 		"-":   "\\-",
 		"#":   "\\#",
@@ -74,7 +97,7 @@ func (s stringAttr) WFNEncode() string {
 		">":   "\\>",
 		"@":   "\\@",
 		"!":   "\\!",
-		"\"":   "\\\"",
+		"\"":  "\\\"",
 		"\\[": "\\[",
 		"\\]": "\\]",
 		"\\^": "\\^",
@@ -87,17 +110,29 @@ func (s stringAttr) WFNEncode() string {
 		encoded = regexp.MustCompile(key).ReplaceAllString(encoded, repl)
 	}
 
-	return encoded
+	return "\"" + encoded + "\""
 }
 
-func (s stringAttr) UrlEncode() string {
+func (s StringAttr) UrlEncoded() string {
 	return url.QueryEscape(string(s.raw))
 }
 
-func (s stringAttr) IsEmpty() bool {
-	return s.raw == ""
+func (s StringAttr) IsEmpty() bool {
+	return s.raw == "" && !s.isNa && !s.isAny
 }
 
-func isValidAsStringAttr(str string) bool {
-	return regexp.MustCompile("\\A(\\*|\\?+){0,1}[a-zA-Z0-9\\-_!\"#$%&'()+,./:;<=>@\\[\\]^`{}\\|~]+(\\*|\\?+){0,1}$").FindString(str) == str
+func (s StringAttr) IsValid() bool {
+	if s.isAny && s.isNa {
+		return false
+	}
+
+	if (s.isAny || s.isNa) && s.raw != "" {
+		return false
+	}
+
+	if regexp.MustCompile("\\A(\\*|\\?+){0,1}[a-zA-Z0-9\\-_!\"#$%&'()+,./:;<=>@\\[\\]^`{}\\|~\\\\]+(\\*|\\?+){0,1}$").FindString(s.raw) != s.raw {
+		return false
+	}
+
+	return true
 }

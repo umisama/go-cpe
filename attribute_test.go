@@ -24,13 +24,8 @@ func TestNewStringAttr(t *testing.T) {
 	}
 
 	for i, c := range cases {
-		sa, err := newStringAttr(c.input)
-		if c.valid {
-			assert.Nil(t, err, "%d", i)
-			assert.Equal(t, c.input, sa.raw)
-		} else {
-			assert.Error(t, err, "%d", i)
-		}
+		sa := NewStringAttr(c.input)
+		assert.Equal(t, c.valid, sa.IsValid(), "%d", i)
 	}
 }
 
@@ -40,23 +35,22 @@ func TestWFNEncoded(t *testing.T) {
 		expect string
 	}
 	var cases = []testcase{
-		{"foo-bar", "foo\\-bar"},
-		{"Acrobat_Reader", "Acrobat_Reader"},
-		{"\"oh_my!\"", "\\\"oh_my\\!\\\""},
-		{"g++", "g\\+\\+"},
-		{"g.?", "g\\.?"},
-		{"sr*", "sr*"},
-		{"big$money", "big\\$money"},
-		{"foo:bar", "foo\\:bar"},
-		{"with_quoted~tilde", "with_quoted\\~tilde"},
-		{"*SOFT*", "*SOFT*"},
-		{"8.??", "8\\.??"},
-		{"*8.??", "*8\\.??"},
+		{"foo-bar", "\"foo\\-bar\""},
+		{"Acrobat_Reader", "\"Acrobat_Reader\""},
+		{"\"oh_my!\"", "\"\\\"oh_my\\!\\\"\""},
+		{"g++", "\"g\\+\\+\""},
+		{"g.?", "\"g\\.?\""},
+		{"sr*", "\"sr*\""},
+		{"big$money", "\"big\\$money\""},
+		{"foo:bar", "\"foo\\:bar\""},
+		{"with_quoted~tilde", "\"with_quoted\\~tilde\""},
+		{"*SOFT*", "\"*SOFT*\""},
+		{"8.??", "\"8\\.??\""},
+		{"*8.??", "\"*8\\.??\""},
 	}
 
 	for i, c := range cases {
-		sa, err := newStringAttr(c.input)
-		assert.Nil(t, err, "%d", i)
-		assert.Equal(t, c.expect, sa.WFNEncode(), "%d", i)
+		sa := NewStringAttr(c.input)
+		assert.Equal(t, c.expect, sa.WFNEncoded(), "%d", i)
 	}
 }
