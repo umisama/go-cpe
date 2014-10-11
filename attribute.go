@@ -7,6 +7,7 @@ import (
 type Attribute interface {
 	WFNEncoded() string
 	UrlEncoded() string
+	FmtString() string
 	String() string
 	IsEmpty() bool
 	IsValid() bool
@@ -38,6 +39,10 @@ func (m PartAttr) String() string {
 
 func (m PartAttr) WFNEncoded() string {
 	return "\"" + m.String() + "\""
+}
+
+func(m PartAttr) FmtString() string {
+	return m.String()
 }
 
 func (m PartAttr) UrlEncoded() string {
@@ -81,6 +86,16 @@ func (s StringAttr) WFNEncoded() string {
 	}
 
 	return "\"" + wfn_encoder.Encode(s.raw) + "\""
+}
+
+func (s StringAttr) FmtString() string {
+	if s.isNa {
+		return "-"
+	} else if len(s.raw) == 0 {
+		return "*"
+	}
+
+	return fmt_encoder.Encode(s.raw)
 }
 
 func (s StringAttr) UrlEncoded() string {

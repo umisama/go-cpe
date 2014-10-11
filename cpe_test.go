@@ -80,7 +80,7 @@ func TestUrlExamples(t *testing.T) {
 	item.SetUpdate(NewStringAttr("sp?"))
 	assert.Equal(t, `cpe:/a:microsoft:internet_explorer:8.%02:sp%01`, item.Uri())
 
-	// Example3 
+	// Example3
 	item = NewItem()
 	item.SetPart(Application)
 	item.SetVendor(NewStringAttr("hp"))
@@ -110,4 +110,56 @@ func TestUrlExamples(t *testing.T) {
 	item.SetTargetSw(NewStringAttr("ipod_touch"))
 	item.SetTargetHw(NewStringAttr("80gb"))
 	assert.Equal(t, `cpe:/a:foo%5cbar:big%24money_manager_2010:::~~special~ipod_touch~80gb~`, item.Uri())
+}
+
+func TestFormattedString(t *testing.T) {
+	// Example 1
+	item := NewItem()
+	item.SetPart(Application)
+	item.SetVendor(NewStringAttr("microsoft"))
+	item.SetProduct(NewStringAttr("internet_explorer"))
+	item.SetVersion(NewStringAttr("8.0.6001"))
+	item.SetUpdate(NewStringAttr("beta"))
+	assert.Equal(t, `cpe:2.3:a:microsoft:internet_explorer:8.0.6001:beta:*:*:*:*:*:*`, item.Formatted())
+
+	// Example 2
+	item = NewItem()
+	item.SetPart(Application)
+	item.SetVendor(NewStringAttr("microsoft"))
+	item.SetProduct(NewStringAttr("internet_explorer"))
+	item.SetVersion(NewStringAttr("8.*"))
+	item.SetUpdate(NewStringAttr("sp?"))
+	item.SetLanguage(Any)
+	assert.Equal(t, `cpe:2.3:a:microsoft:internet_explorer:8.*:sp?:*:*:*:*:*:*`, item.Formatted())
+
+	// Example 3
+	item = NewItem()
+	item.SetPart(Application)
+	item.SetVendor(NewStringAttr("hp"))
+	item.SetProduct(NewStringAttr("insight_diagnostics"))
+	item.SetVersion(NewStringAttr("7.4.0.1570"))
+	item.SetUpdate(Na)
+	item.SetSwEdition(NewStringAttr("online"))
+	item.SetTargetSw(NewStringAttr("win2003"))
+	item.SetTargetHw(NewStringAttr("x64"))
+	assert.Equal(t, `cpe:2.3:a:hp:insight_diagnostics:7.4.0.1570:-:*:*:online:win2003:x64:*`, item.Formatted())
+
+	// Example 4
+	item = NewItem()
+	item.SetPart(Application)
+	item.SetVendor(NewStringAttr("hp"))
+	item.SetProduct(NewStringAttr("openview_network_manager"))
+	item.SetVersion(NewStringAttr("7.51"))
+	item.SetTargetSw(NewStringAttr("linux"))
+	assert.Equal(t, `cpe:2.3:a:hp:openview_network_manager:7.51:*:*:*:*:linux:*:*`, item.Formatted())
+
+	// Example 5
+	item = NewItem()
+	item.SetPart(Application)
+	item.SetVendor(NewStringAttr("foo\\bar"))
+	item.SetProduct(NewStringAttr("big$money_2010"))
+	item.SetSwEdition(NewStringAttr("special"))
+	item.SetTargetSw(NewStringAttr("ipod_touch"))
+	item.SetTargetHw(NewStringAttr("80gb"))
+	assert.Equal(t, `cpe:2.3:a:foo\\bar:big\$money_2010:*:*:*:*:special:ipod_touch:80gb:*`, item.Formatted())
 }

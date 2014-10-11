@@ -109,6 +109,22 @@ func (m *Item) Uri() string {
 	return strings.TrimRight(uri, ":*")
 }
 
+func (m *Item) Formatted() string {
+	fmted := "cpe:2.3"
+
+	for _, it := range []Attribute{
+			m.part, m.vendor, m.product, m.version, m.update, m.edition, m.language, m.sw_edition, m.target_sw, m.target_hw, m.other,
+	}{
+		if !it.IsEmpty() {
+			fmted += ":" + it.FmtString()
+		} else {
+			fmted += ":*"
+
+		}
+	}
+	return fmted
+}
+
 func (i *Item) SetPart(p PartAttr) error {
 	if !p.IsValid() {
 		return cpeerr{reason: err_invalid_type, attr: []interface{}{p, "part"}}
