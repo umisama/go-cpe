@@ -1,7 +1,6 @@
 package cpe
 
 import (
-	"net/url"
 	"regexp"
 	"strings"
 )
@@ -43,7 +42,7 @@ func (m PartAttr) WFNEncoded() string {
 }
 
 func (m PartAttr) UrlEncoded() string {
-	return "\"" + m.String() + "\""
+	return m.String()
 }
 
 func (m PartAttr) IsValid() bool {
@@ -114,7 +113,12 @@ func (s StringAttr) WFNEncoded() string {
 }
 
 func (s StringAttr) UrlEncoded() string {
-	return url.QueryEscape(string(s.raw))
+	if s.isAny {
+		return "" // *
+	} else if s.isNa {
+		return "-"
+	}
+	return url_encoder.Encode(s.raw)
 }
 
 func (s StringAttr) IsEmpty() bool {

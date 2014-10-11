@@ -2,6 +2,7 @@ package cpe
 
 import (
 	"fmt"
+	"strings"
 )
 
 type Item struct {
@@ -56,6 +57,46 @@ func (m *Item) Wfn() string {
 	wfn += "]"
 
 	return wfn
+}
+
+func (m *Item) Uri() string {
+	uri := "cpe:/"
+
+	l := []struct {
+		name string
+		attr Attribute
+	}{
+		{"part", m.part},
+		{"vendor", m.vendor},
+		{"product", m.product},
+		{"version", m.version},
+		{"update", m.update},
+	}
+
+	for c, it := range l {
+		if !it.attr.IsEmpty() {
+			uri += it.attr.UrlEncoded()
+		}
+		if c+1 != len(l) {
+			uri += ":"
+		}
+	}
+
+	if m.target_hw.UrlEncoded() != "" ||
+		m.target_sw.UrlEncoded() != "" ||
+		m.sw_edition.UrlEncoded() != "" ||
+		m.other.UrlEncoded() != "" {
+		uri += ":~" + m.edition.UrlEncoded()
+		uri += "~" + m.sw_edition.UrlEncoded()
+		uri += "~" + m.target_sw.UrlEncoded()
+		uri += "~" + m.target_hw.UrlEncoded()
+		uri += "~" + m.other.UrlEncoded()
+	} else {
+		uri += ":" + m.edition.UrlEncoded()
+	}
+
+	uri += ":" + m.language.UrlEncoded()
+	return strings.TrimRight(uri, ":*")
 }
 
 func (i *Item) SetPart(p PartAttr) error {
