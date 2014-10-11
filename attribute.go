@@ -2,7 +2,6 @@ package cpe
 
 import (
 	"regexp"
-	"strings"
 )
 
 type Attribute interface {
@@ -75,41 +74,7 @@ func (s StringAttr) WFNEncoded() string {
 		return "ANY"
 	}
 
-	encoded := strings.Replace(s.raw, "\\", "\\\\", -1)
-	for key, repl := range map[string]string{
-		"-":   "\\-",
-		"#":   "\\#",
-		"\\$": "\\$",
-		"%":   "\\%",
-		"&":   "\\&",
-		"'":   "\\'",
-		"\\(": "\\(",
-		"\\)": "\\)",
-		"\\+": "\\+",
-		",":   "\\,",
-		"\\.": "\\.",
-		"/":   "\\/",
-		":":   "\\:",
-		";":   "\\;",
-		"<":   "\\<",
-		"=":   "\\=",
-		">":   "\\>",
-		"@":   "\\@",
-		"!":   "\\!",
-		"\"":  "\\\"",
-		"\\[": "\\[",
-		"\\]": "\\]",
-		"\\^": "\\^",
-		"`":   "\\`",
-		"{":   "\\{",
-		"}":   "\\}",
-		"\\|": "\\|",
-		"~":   "\\~",
-	} {
-		encoded = regexp.MustCompile(key).ReplaceAllString(encoded, repl)
-	}
-
-	return "\"" + encoded + "\""
+	return "\"" + wfn_encoder.Encode(s.raw) + "\""
 }
 
 func (s StringAttr) UrlEncoded() string {
