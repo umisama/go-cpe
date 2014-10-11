@@ -26,7 +26,7 @@ func TestWfnExamples(t *testing.T) {
 	item.SetUpdate(NewStringAttr("sp?"))
 	item.SetEdition(Na)
 	item.SetLanguage(Any)
-	assert.Equal(t, `wfn:[part="a",vendor="microsoft",product="internet_explorer",version="8\.*",update="sp?",edition=NA,language=ANY]`, item.Wfn())
+	assert.Equal(t, `wfn:[part="a",vendor="microsoft",product="internet_explorer",version="8\.*",update="sp?",edition=NA]`, item.Wfn())
 
 	// Example 3
 	item = NewItem()

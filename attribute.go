@@ -7,6 +7,7 @@ import (
 type Attribute interface {
 	WFNEncoded() string
 	UrlEncoded() string
+	String() string
 	IsEmpty() bool
 	IsValid() bool
 }
@@ -14,9 +15,8 @@ type Attribute interface {
 type PartAttr rune
 
 type StringAttr struct {
-	raw   string
-	isAny bool
-	isNa  bool
+	raw  string
+	isNa bool
 }
 
 var (
@@ -24,7 +24,7 @@ var (
 	OperationgSystem = PartAttr('o')
 	Hardware         = PartAttr('h')
 	PartNotSet       = PartAttr(0x00)
-	Any              = StringAttr{isAny: true}
+	Any              = StringAttr{}
 	Na               = StringAttr{isNa: true}
 )
 
@@ -63,14 +63,20 @@ func NewStringAttr(str string) StringAttr {
 	}
 }
 
-func (s StringAttr) Raw() string {
+func (s StringAttr) String() string {
+	if s.isNa {
+		return "-"
+	} else if len(s.raw) == 0 {
+		return "*"
+	}
+
 	return s.raw
 }
 
 func (s StringAttr) WFNEncoded() string {
 	if s.isNa {
 		return "NA"
-	} else if s.isAny {
+	} else if len(s.raw) == 0 {
 		return "ANY"
 	}
 
@@ -78,7 +84,7 @@ func (s StringAttr) WFNEncoded() string {
 }
 
 func (s StringAttr) UrlEncoded() string {
-	if s.isAny {
+	if s.IsEmpty() {
 		return "" // *
 	} else if s.isNa {
 		return "-"
@@ -86,16 +92,13 @@ func (s StringAttr) UrlEncoded() string {
 	return url_encoder.Encode(s.raw)
 }
 
+// Empty StringAttr means ANY.
 func (s StringAttr) IsEmpty() bool {
-	return s.raw == "" && !s.isNa && !s.isAny
+	return s.raw == "" && !s.isNa
 }
 
 func (s StringAttr) IsValid() bool {
-	if s.isAny && s.isNa {
-		return false
-	}
-
-	if (s.isAny || s.isNa) && s.raw != "" {
+	if s.isNa && len(s.raw) != 0 {
 		return false
 	}
 

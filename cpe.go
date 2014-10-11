@@ -21,7 +21,17 @@ type Item struct {
 
 func NewItem() *Item {
 	return &Item{
-		part: PartNotSet,
+		part:       PartNotSet,
+		vendor:     Any,
+		product:    Any,
+		version:    Any,
+		update:     Any,
+		edition:    Any,
+		language:   Any,
+		sw_edition: Any,
+		target_sw:  Any,
+		target_hw:  Any,
+		other:      Any,
 	}
 }
 
