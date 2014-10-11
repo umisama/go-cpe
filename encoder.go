@@ -115,6 +115,17 @@ func (t charEncoder) Encode(str string) string {
 	return str
 }
 
+func (t charEncoder) Decode(str string) string {
+	for _, it := range t {
+		str = it.Decode(str)
+	}
+	return str
+}
+
 func (t encodeTable) Encode(str string) string {
 	return strings.Replace(str, t.raw, t.encoded, -1)
+}
+
+func (t encodeTable) Decode(str string) string {
+	return strings.Replace(str, t.encoded, t.raw, -1)
 }

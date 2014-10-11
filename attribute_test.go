@@ -54,3 +54,47 @@ func TestWFNEncoded(t *testing.T) {
 		assert.Equal(t, c.expect, sa.WFNEncoded(), "%d", i)
 	}
 }
+
+func TestNewStringAttrFromWcnEncoded(t *testing.T) {
+	type testcase struct {
+		input  string
+		expect string
+	}
+	var cases = []testcase{
+		{"\"foo\\-bar\"", "foo-bar"},
+		{"\"Acrobat_Reader\"", "Acrobat_Reader"},
+		{"\"\\\"oh_my\\!\\\"\"", "\"oh_my!\""},
+		{"\"g\\+\\+\"", "g++"},
+		{"\"g\\.?\"", "g.?"},
+		{"\"sr*\"", "sr*"},
+		{"\"big\\$money\"", "big$money"},
+		{"\"foo\\:bar\"", "foo:bar"},
+		{"\"with_quoted\\~tilde\"", "with_quoted~tilde"},
+		{"\"*SOFT*\"", "*SOFT*"},
+		{"\"8\\.??\"", "8.??"},
+		{"\"*8\\.??\"", "*8.??"},
+	}
+
+	for i, c := range cases {
+		sa := NewStringAttrFromWfnEncoded(c.input)
+		assert.Equal(t, c.expect, sa.raw, "%d", i)
+	}
+}
+
+func TestNewPartAttrFromWcnEncoded(t *testing.T) {
+	type testcase struct {
+		input  string
+		expect PartAttr
+	}
+	var cases = []testcase{
+		{`"a"`, Application},
+		{`"o"`, OperationgSystem},
+		{`"h"`, Hardware},
+		{`"z"`, PartNotSet},
+	}
+
+	for i, c := range cases {
+		pa := NewPartAttrFromWfnEncoded(c.input)
+		assert.Equal(t, c.expect, pa, "%d", i)
+	}
+}

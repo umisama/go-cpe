@@ -2,6 +2,7 @@ package cpe
 
 import (
 	"regexp"
+	"strings"
 )
 
 type Attribute interface {
@@ -29,6 +30,22 @@ var (
 	Na               = StringAttr{isNa: true}
 )
 
+func NewPartAttrFromWfnEncoded(str string) PartAttr {
+	if len(str) != 3 {
+		return PartNotSet
+	}
+
+	switch PartAttr(str[1]) {
+	case Application:
+		return Application
+	case OperationgSystem:
+		return OperationgSystem
+	case Hardware:
+		return Hardware
+	}
+	return PartNotSet
+}
+
 func (m PartAttr) String() string {
 	if m.IsValid() {
 		return string(m)
@@ -39,6 +56,10 @@ func (m PartAttr) String() string {
 
 func (m PartAttr) WFNEncoded() string {
 	return "\"" + m.String() + "\""
+}
+
+func (m PartAttr) WFNDecode(str string) error {
+	return nil
 }
 
 func(m PartAttr) FmtString() string {
@@ -65,6 +86,17 @@ func (m PartAttr) IsEmpty() bool {
 func NewStringAttr(str string) StringAttr {
 	return StringAttr{
 		raw: str,
+	}
+}
+
+func NewStringAttrFromWfnEncoded(str string) StringAttr {
+	if str == "NA" {
+		return Na
+	} else if str == "ANY" {
+		return Any
+	}
+	return StringAttr{
+		raw: wfn_encoder.Decode(strings.TrimPrefix(strings.TrimSuffix(str, "\""), "\"")),
 	}
 }
 

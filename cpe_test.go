@@ -163,3 +163,42 @@ func TestFormattedString(t *testing.T) {
 	item.SetTargetHw(NewStringAttr("80gb"))
 	assert.Equal(t, `cpe:2.3:a:foo\\bar:big\$money_2010:*:*:*:*:special:ipod_touch:80gb:*`, item.Formatted())
 }
+
+func TestNewItemFromWfn(t *testing.T) {
+	// Example 1
+	item, err := NewItemFromWfn(`wfn:[part="a",vendor="microsoft",product="internet_explorer",version="8\.0\.6001",update="beta",edition=NA]`)
+	assert.Nil(t, err)
+
+	if item != nil {
+		assert.Equal(t, item.Part(), Application)
+		assert.Equal(t, item.Vendor(), NewStringAttr("microsoft"))
+		assert.Equal(t, item.Product(), NewStringAttr("internet_explorer"))
+		assert.Equal(t, item.Version(), NewStringAttr("8.0.6001"))
+		assert.Equal(t, item.Update(), NewStringAttr("beta"))
+		assert.Equal(t, item.Edition(), Na)
+	}
+
+	// Example 5
+	item, err = NewItemFromWfn(`wfn:[part="a",vendor="foo\\bar",product="big\$money_2010",sw_edition="special",target_sw="ipod_touch"]`)
+	assert.Nil(t, err)
+
+	if item != nil {
+		assert.Equal(t, item.Part(), Application)
+		assert.Equal(t, item.Vendor(), NewStringAttr("foo\\bar"))
+		assert.Equal(t, item.Product(), NewStringAttr("big$money_2010"))
+		assert.Equal(t, item.SwEdition(), NewStringAttr("special"))
+		assert.Equal(t, item.TargetSw(), NewStringAttr("ipod_touch"))
+	}
+
+	// Example 1'
+	_, err = NewItemFromWfn(`wfn:[part="a",vendor="microsoft",product="internet_explorer",version="8\.0\.6001",update="beta",edition=NA`)
+	assert.Error(t, err)
+
+	// Example 1''
+	_, err = NewItemFromWfn(`part="a",vendor="microsoft",product="internet_explorer",version="8\.0\.6001",update="beta",edition=NA]`)
+	assert.Error(t, err)
+
+	// Example 1'''
+	_, err = NewItemFromWfn(`wfn:[part="a"vendor="microsoft",product="internet_explorer",version="8\.0\.6001",update="beta",edition=NA]`)
+	assert.Error(t, err)
+}
