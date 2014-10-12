@@ -58,10 +58,6 @@ func (m PartAttr) WFNEncoded() string {
 	return "\"" + m.String() + "\""
 }
 
-func (m PartAttr) WFNDecode(str string) error {
-	return nil
-}
-
 func(m PartAttr) FmtString() string {
 	return m.String()
 }
