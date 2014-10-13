@@ -86,19 +86,41 @@ func NewItemFromWfn(wfn string) (*Item, error) {
 }
 
 func NewItemFromUri(uri string) (*Item, error) {
-	return &Item{
-		part:       PartNotSet,
-		vendor:     Any,
-		product:    Any,
-		version:    Any,
-		update:     Any,
-		edition:    Any,
-		language:   Any,
-		sw_edition: Any,
-		target_sw:  Any,
-		target_hw:  Any,
-		other:      Any,
-	}, nil
+	if strings.HasPrefix(uri, "cpe:/") {
+		uri = strings.TrimPrefix(uri, "cpe:/")
+	} else {
+		return nil, cpeerr{reason: err_invalid_wfn}
+	}
+
+	item := NewItem()
+	for i, attr := range strings.Split(uri, ":") {
+		switch i {
+		case 0:
+			item.part = NewPartAttrFromUriEncoded(attr)
+		case 1:
+			item.vendor = NewStringAttrFromUriEncoded(attr)
+		case 2:
+			item.product = NewStringAttrFromUriEncoded(attr)
+		case 3:
+			item.version = NewStringAttrFromUriEncoded(attr)
+		case 4:
+			item.update = NewStringAttrFromUriEncoded(attr)
+		case 5:
+			editions := strings.Split(attr, "~")
+			if len(editions) == 1 {
+				item.edition = NewStringAttrFromUriEncoded(editions[0])
+			} else if len(editions) == 6 {
+				item.edition = NewStringAttrFromUriEncoded(editions[1])
+				item.sw_edition = NewStringAttrFromUriEncoded(editions[2])
+				item.target_sw = NewStringAttrFromUriEncoded(editions[3])
+				item.target_hw = NewStringAttrFromUriEncoded(editions[4])
+				item.other = NewStringAttrFromUriEncoded(editions[5])
+			} else {
+				return nil, cpeerr{reason: err_invalid_wfn}
+			}
+		}
+	}
+	return item, nil
 }
 
 func NewItemFromFormattedString(str string) (*Item, error) {

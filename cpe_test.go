@@ -202,3 +202,29 @@ func TestNewItemFromWfn(t *testing.T) {
 	_, err = NewItemFromWfn(`wfn:[part="a"vendor="microsoft",product="internet_explorer",version="8\.0\.6001",update="beta",edition=NA]`)
 	assert.Error(t, err)
 }
+
+func TestNewItemFromUri(t *testing.T) {
+	item, err := NewItemFromUri("cpe:/a:microsoft:internet_explorer:8.0.6001:beta")
+	assert.Nil(t, err)
+	if item != nil {
+		assert.Equal(t, item.Part(), Application)
+		assert.Equal(t, item.Vendor(), NewStringAttr("microsoft"))
+		assert.Equal(t, item.Product(), NewStringAttr("internet_explorer"))
+		assert.Equal(t, item.Version(), NewStringAttr("8.0.6001"))
+		assert.Equal(t, item.Update(), NewStringAttr("beta"))
+	}
+
+	// Example3
+	item, err = NewItemFromUri(`cpe:/a:hp:insight_diagnostics:7.4.0.1570:-:~~online~win2003~x64~`)
+	assert.Nil(t, err)
+	if item != nil {
+		assert.Equal(t, item.Part(), Application)
+		assert.Equal(t, item.Vendor(), NewStringAttr("hp"))
+		assert.Equal(t, item.Product(), NewStringAttr("insight_diagnostics"))
+		assert.Equal(t, item.Version(), NewStringAttr("7.4.0.1570"))
+		assert.Equal(t, item.Update(), Na)
+		assert.Equal(t, item.SwEdition(), NewStringAttr("online"))
+		assert.Equal(t, item.TargetSw(), NewStringAttr("win2003"))
+		assert.Equal(t, item.TargetHw(), NewStringAttr("x64"))
+	}
+}
