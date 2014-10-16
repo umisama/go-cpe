@@ -7,9 +7,9 @@ import (
 
 // Attribute groups PartAttr and StringAttr.
 type Attribute interface {
-	WFNEncoded() string
-	UrlEncoded() string
-	FmtString() string
+	wfnEncoded() string
+	urlEncoded() string
+	fmtString() string
 	String() string
 	IsEmpty() bool
 	IsValid() bool
@@ -33,7 +33,7 @@ var (
 	Na               = StringAttr{isNa: true}
 )
 
-func NewPartAttrFromWfnEncoded(str string) PartAttr {
+func newPartAttrFromWfnEncoded(str string) PartAttr {
 	if len(str) != 3 {
 		return PartNotSet
 	}
@@ -49,7 +49,7 @@ func NewPartAttrFromWfnEncoded(str string) PartAttr {
 	return PartNotSet
 }
 
-func NewPartAttrFromUriEncoded(str string) PartAttr {
+func newPartAttrFromUriEncoded(str string) PartAttr {
 	if len(str) != 1 {
 		return PartNotSet
 	}
@@ -65,7 +65,7 @@ func NewPartAttrFromUriEncoded(str string) PartAttr {
 	return PartNotSet
 }
 
-func NewPartAttrFromFmtEncoded(str string) PartAttr {
+func newPartAttrFromFmtEncoded(str string) PartAttr {
 	if len(str) != 1 {
 		return PartNotSet
 	}
@@ -89,15 +89,15 @@ func (m PartAttr) String() string {
 	}
 }
 
-func (m PartAttr) WFNEncoded() string {
+func (m PartAttr) wfnEncoded() string {
 	return "\"" + m.String() + "\""
 }
 
-func(m PartAttr) FmtString() string {
+func(m PartAttr) fmtString() string {
 	return m.String()
 }
 
-func (m PartAttr) UrlEncoded() string {
+func (m PartAttr) urlEncoded() string {
 	return m.String()
 }
 
@@ -120,7 +120,7 @@ func NewStringAttr(str string) StringAttr {
 	}
 }
 
-func NewStringAttrFromWfnEncoded(str string) StringAttr {
+func newStringAttrFromWfnEncoded(str string) StringAttr {
 	if str == "NA" {
 		return Na
 	} else if str == "ANY" {
@@ -131,7 +131,7 @@ func NewStringAttrFromWfnEncoded(str string) StringAttr {
 	}
 }
 
-func NewStringAttrFromUriEncoded(str string) StringAttr {
+func newStringAttrFromUriEncoded(str string) StringAttr {
 	if str == "-" {
 		return Na
 	} else if str == "" || str == "*" {
@@ -142,7 +142,7 @@ func NewStringAttrFromUriEncoded(str string) StringAttr {
 	}
 }
 
-func NewStringAttrFromFmtEncoded(str string) StringAttr {
+func newStringAttrFromFmtEncoded(str string) StringAttr {
 	if str == "-" {
 		return Na
 	} else if str == "*" {
@@ -163,7 +163,7 @@ func (s StringAttr) String() string {
 	return s.raw
 }
 
-func (s StringAttr) WFNEncoded() string {
+func (s StringAttr) wfnEncoded() string {
 	if s.isNa {
 		return "NA"
 	} else if len(s.raw) == 0 {
@@ -173,7 +173,7 @@ func (s StringAttr) WFNEncoded() string {
 	return "\"" + wfn_encoder.Encode(s.raw) + "\""
 }
 
-func (s StringAttr) FmtString() string {
+func (s StringAttr) fmtString() string {
 	if s.isNa {
 		return "-"
 	} else if len(s.raw) == 0 {
@@ -183,7 +183,7 @@ func (s StringAttr) FmtString() string {
 	return fmt_encoder.Encode(s.raw)
 }
 
-func (s StringAttr) UrlEncoded() string {
+func (s StringAttr) urlEncoded() string {
 	if s.IsEmpty() {
 		return "" // *
 	} else if s.isNa {

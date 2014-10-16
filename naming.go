@@ -60,27 +60,27 @@ func NewItemFromWfn(wfn string) (*Item, error) {
 		n, v := sepattr[0], sepattr[1]
 		switch n {
 		case "part":
-			item.part = NewPartAttrFromWfnEncoded(v)
+			item.part = newPartAttrFromWfnEncoded(v)
 		case "vendor":
-			item.vendor = NewStringAttrFromWfnEncoded(v)
+			item.vendor = newStringAttrFromWfnEncoded(v)
 		case "product":
-			item.product = NewStringAttrFromWfnEncoded(v)
+			item.product = newStringAttrFromWfnEncoded(v)
 		case "version":
-			item.version = NewStringAttrFromWfnEncoded(v)
+			item.version = newStringAttrFromWfnEncoded(v)
 		case "update":
-			item.update = NewStringAttrFromWfnEncoded(v)
+			item.update = newStringAttrFromWfnEncoded(v)
 		case "edition":
-			item.edition = NewStringAttrFromWfnEncoded(v)
+			item.edition = newStringAttrFromWfnEncoded(v)
 		case "language":
-			item.language = NewStringAttrFromWfnEncoded(v)
+			item.language = newStringAttrFromWfnEncoded(v)
 		case "sw_edition":
-			item.sw_edition = NewStringAttrFromWfnEncoded(v)
+			item.sw_edition = newStringAttrFromWfnEncoded(v)
 		case "target_sw":
-			item.target_sw = NewStringAttrFromWfnEncoded(v)
+			item.target_sw = newStringAttrFromWfnEncoded(v)
 		case "target_hw":
-			item.target_hw = NewStringAttrFromWfnEncoded(v)
+			item.target_hw = newStringAttrFromWfnEncoded(v)
 		case "other":
-			item.other = NewStringAttrFromWfnEncoded(v)
+			item.other = newStringAttrFromWfnEncoded(v)
 		}
 	}
 
@@ -98,25 +98,25 @@ func NewItemFromUri(uri string) (*Item, error) {
 	for i, attr := range strings.Split(uri, ":") {
 		switch i {
 		case 0:
-			item.part = NewPartAttrFromUriEncoded(attr)
+			item.part = newPartAttrFromUriEncoded(attr)
 		case 1:
-			item.vendor = NewStringAttrFromUriEncoded(attr)
+			item.vendor = newStringAttrFromUriEncoded(attr)
 		case 2:
-			item.product = NewStringAttrFromUriEncoded(attr)
+			item.product = newStringAttrFromUriEncoded(attr)
 		case 3:
-			item.version = NewStringAttrFromUriEncoded(attr)
+			item.version = newStringAttrFromUriEncoded(attr)
 		case 4:
-			item.update = NewStringAttrFromUriEncoded(attr)
+			item.update = newStringAttrFromUriEncoded(attr)
 		case 5:
 			editions := strings.Split(attr, "~")
 			if len(editions) == 1 {
-				item.edition = NewStringAttrFromUriEncoded(editions[0])
+				item.edition = newStringAttrFromUriEncoded(editions[0])
 			} else if len(editions) == 6 {
-				item.edition = NewStringAttrFromUriEncoded(editions[1])
-				item.sw_edition = NewStringAttrFromUriEncoded(editions[2])
-				item.target_sw = NewStringAttrFromUriEncoded(editions[3])
-				item.target_hw = NewStringAttrFromUriEncoded(editions[4])
-				item.other = NewStringAttrFromUriEncoded(editions[5])
+				item.edition = newStringAttrFromUriEncoded(editions[1])
+				item.sw_edition = newStringAttrFromUriEncoded(editions[2])
+				item.target_sw = newStringAttrFromUriEncoded(editions[3])
+				item.target_hw = newStringAttrFromUriEncoded(editions[4])
+				item.other = newStringAttrFromUriEncoded(editions[5])
 			} else {
 				return nil, cpeerr{reason: err_invalid_wfn}
 			}
@@ -141,27 +141,27 @@ func NewItemFromFormattedString(str string) (*Item, error) {
 	for i, attr := range attrs {
 		switch i {
 		case 0:
-			item.part = NewPartAttrFromFmtEncoded(attr)
+			item.part = newPartAttrFromFmtEncoded(attr)
 		case 1:
-			item.vendor = NewStringAttrFromFmtEncoded(attr)
+			item.vendor = newStringAttrFromFmtEncoded(attr)
 		case 2:
-			item.product = NewStringAttrFromFmtEncoded(attr)
+			item.product = newStringAttrFromFmtEncoded(attr)
 		case 3:
-			item.version = NewStringAttrFromFmtEncoded(attr)
+			item.version = newStringAttrFromFmtEncoded(attr)
 		case 4:
-			item.update = NewStringAttrFromFmtEncoded(attr)
+			item.update = newStringAttrFromFmtEncoded(attr)
 		case 5:
-			item.edition = NewStringAttrFromFmtEncoded(attr)
+			item.edition = newStringAttrFromFmtEncoded(attr)
 		case 6:
-			item.language = NewStringAttrFromFmtEncoded(attr)
+			item.language = newStringAttrFromFmtEncoded(attr)
 		case 7:
-			item.sw_edition = NewStringAttrFromFmtEncoded(attr)
+			item.sw_edition = newStringAttrFromFmtEncoded(attr)
 		case 8:
-			item.target_sw = NewStringAttrFromFmtEncoded(attr)
+			item.target_sw = newStringAttrFromFmtEncoded(attr)
 		case 9:
-			item.target_hw = NewStringAttrFromFmtEncoded(attr)
+			item.target_hw = newStringAttrFromFmtEncoded(attr)
 		case 10:
-			item.other = NewStringAttrFromFmtEncoded(attr)
+			item.other = newStringAttrFromFmtEncoded(attr)
 		}
 	}
 
@@ -195,7 +195,7 @@ func (m *Item) Wfn() string {
 			} else {
 				wfn += ","
 			}
-			wfn += it.name + "=" + it.attr.WFNEncoded()
+			wfn += it.name + "=" + it.attr.wfnEncoded()
 		}
 	}
 	wfn += "]"
@@ -220,27 +220,27 @@ func (m *Item) Uri() string {
 
 	for c, it := range l {
 		if !it.attr.IsEmpty() {
-			uri += it.attr.UrlEncoded()
+			uri += it.attr.urlEncoded()
 		}
 		if c+1 != len(l) {
 			uri += ":"
 		}
 	}
 
-	if m.target_hw.UrlEncoded() != "" ||
-		m.target_sw.UrlEncoded() != "" ||
-		m.sw_edition.UrlEncoded() != "" ||
-		m.other.UrlEncoded() != "" {
-		uri += ":~" + m.edition.UrlEncoded()
-		uri += "~" + m.sw_edition.UrlEncoded()
-		uri += "~" + m.target_sw.UrlEncoded()
-		uri += "~" + m.target_hw.UrlEncoded()
-		uri += "~" + m.other.UrlEncoded()
+	if m.target_hw.urlEncoded() != "" ||
+		m.target_sw.urlEncoded() != "" ||
+		m.sw_edition.urlEncoded() != "" ||
+		m.other.urlEncoded() != "" {
+		uri += ":~" + m.edition.urlEncoded()
+		uri += "~" + m.sw_edition.urlEncoded()
+		uri += "~" + m.target_sw.urlEncoded()
+		uri += "~" + m.target_hw.urlEncoded()
+		uri += "~" + m.other.urlEncoded()
 	} else {
-		uri += ":" + m.edition.UrlEncoded()
+		uri += ":" + m.edition.urlEncoded()
 	}
 
-	uri += ":" + m.language.UrlEncoded()
+	uri += ":" + m.language.urlEncoded()
 	return strings.TrimRight(uri, ":*")
 }
 
@@ -252,7 +252,7 @@ func (m *Item) Formatted() string {
 		m.part, m.vendor, m.product, m.version, m.update, m.edition, m.language, m.sw_edition, m.target_sw, m.target_hw, m.other,
 	} {
 		if !it.IsEmpty() {
-			fmted += ":" + it.FmtString()
+			fmted += ":" + it.fmtString()
 		} else {
 			fmted += ":*"
 

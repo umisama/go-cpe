@@ -51,7 +51,7 @@ func TestWFNEncoded(t *testing.T) {
 
 	for i, c := range cases {
 		sa := NewStringAttr(c.input)
-		assert.Equal(t, c.expect, sa.WFNEncoded(), "%d", i)
+		assert.Equal(t, c.expect, sa.wfnEncoded(), "%d", i)
 	}
 }
 
@@ -76,7 +76,7 @@ func TestNewStringAttrFromWcnEncoded(t *testing.T) {
 	}
 
 	for i, c := range cases {
-		sa := NewStringAttrFromWfnEncoded(c.input)
+		sa := newStringAttrFromWfnEncoded(c.input)
 		assert.Equal(t, c.expect, sa.raw, "%d", i)
 	}
 }
@@ -94,7 +94,7 @@ func TestNewPartAttrFromWcnEncoded(t *testing.T) {
 	}
 
 	for i, c := range cases {
-		pa := NewPartAttrFromWfnEncoded(c.input)
+		pa := newPartAttrFromWfnEncoded(c.input)
 		assert.Equal(t, c.expect, pa, "%d", i)
 	}
 }
