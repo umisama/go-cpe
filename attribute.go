@@ -13,6 +13,7 @@ type Attribute interface {
 	String() string
 	IsEmpty() bool
 	IsValid() bool
+	Comparison(Attribute) Relation
 }
 
 // PartAttr reprecents part attribute of cpe item.
@@ -93,7 +94,7 @@ func (m PartAttr) wfnEncoded() string {
 	return "\"" + m.String() + "\""
 }
 
-func(m PartAttr) fmtString() string {
+func (m PartAttr) fmtString() string {
 	return m.String()
 }
 
@@ -112,6 +113,23 @@ func (m PartAttr) IsValid() bool {
 
 func (m PartAttr) IsEmpty() bool {
 	return m == PartNotSet
+}
+
+func (src PartAttr) Comparison(trg Attribute) Relation {
+	trg_part, ok := trg.(PartAttr)
+	if !ok {
+		return Undefined
+	}
+
+	if !src.IsValid() || !trg_part.IsValid() {
+		return Undefined
+	}
+
+	if src == trg_part {
+		return Equal
+	}
+
+	return Disjoint
 }
 
 // NewStringAttr returns attribute of item with str.
@@ -205,6 +223,115 @@ func (s StringAttr) IsValid() bool {
 
 	if regexp.MustCompile("\\A(\\*|\\?+){0,1}[a-zA-Z0-9\\-_!\"#$%&'()+,./:;<=>@\\[\\]^`{}\\|~\\\\]+(\\*|\\?+){0,1}$").FindString(s.raw) != s.raw {
 		return false
+	}
+
+	return true
+}
+
+func (src StringAttr) Comparison(trg Attribute) Relation {
+	trg_str, ok := trg.(StringAttr)
+	if !ok {
+		return Undefined
+	}
+
+	if !src.IsValid() || !trg_str.IsValid() {
+		return Undefined
+	}
+
+	if src == Any {
+		if trg_str == Any {
+			return Equal
+		} else if trg_str == Na {
+			return Superset
+		} else if !trg_str.withWildCard() {
+			return Superset
+		}
+		return Undefined
+	}
+
+	if src == Na {
+		if trg_str == Any {
+			return Subset
+		} else if trg_str == Na {
+			return Equal
+		} else if !trg_str.withWildCard() {
+			return Disjoint
+		}
+		return Undefined
+	}
+
+	if src.withWildCard() {
+		if trg_str == Any {
+			return Subset
+		} else if trg_str == Na {
+			return Disjoint
+		} else if trg_str.withWildCard() {
+			return Undefined
+		} else if match_wildcard(src.String(), trg_str.String()) {
+			return Superset
+		}
+		return Disjoint
+	} else {
+		if trg_str == Any {
+			return Subset
+		} else if trg_str == Na {
+			return Disjoint
+		} else if trg_str.withWildCard() {
+			return Undefined
+		} else if trg_str.String() == src.String() {
+			return Equal
+		}
+		return Disjoint
+	}
+
+	return Undefined
+}
+
+func (m StringAttr) withWildCard() bool {
+	return strings.HasPrefix(m.String(), "*") || strings.HasSuffix(m.String(), "*") || strings.HasPrefix(m.String(), "?") || strings.HasSuffix(m.String(), "?")
+}
+
+func match_wildcard(src, trg string) bool {
+	sufw, sufq, prew, preq := 0, 0, 0, 0
+	if strings.HasPrefix(src, "?") {
+		before := len(src)
+		src = strings.TrimLeft(src, "?")
+		preq = before - len(src)
+	}
+	if strings.HasPrefix(src, "*") {
+		src = strings.TrimPrefix(src, "*")
+		prew = 1
+	}
+	if strings.HasSuffix(src, "?") {
+		before := len(src)
+		src = strings.TrimRight(src, "?")
+		sufq = before - len(src)
+	}
+	if strings.HasSuffix(src, "*") {
+		src = strings.TrimSuffix(src, "*")
+		sufw = 1
+	}
+
+	i := strings.Index(trg, src)
+	if prew != 0 {
+		if i != len(trg)-len(src)-sufq && sufw == 0 {
+			return false
+		}
+	}
+	if sufw != 0 {
+		if i != preq && prew == 0 {
+			return false
+		}
+	}
+	if preq != 0 {
+		if i != preq || (i != len(trg)-len(src)-sufq && sufw == 0) {
+			return false
+		}
+	}
+	if sufq != 0 {
+		if i != len(trg)-sufq-len(src) || (i != preq && prew == 0) {
+			return false
+		}
 	}
 
 	return true

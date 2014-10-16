@@ -98,3 +98,55 @@ func TestNewPartAttrFromWcnEncoded(t *testing.T) {
 		assert.Equal(t, c.expect, pa, "%d", i)
 	}
 }
+
+func TestMatchWildcard(t *testing.T) {
+	type testcase struct {
+		input  string
+		value  string
+		expect bool
+	}
+	var cases = []testcase {
+		{"*123", "11123", true},
+		{"*123", "11123a", false},
+		{"123*", "12311", true},
+		{"123*", "112311", false},
+		{"??123", "11123", true},
+		{"??123", "1123", false},
+		{"??123", "11123a", false},
+		{"123??", "12311", true},
+		{"123??", "123111", false},
+		{"123??", "112311", false},
+		{"*123?", "111233", true},
+		{"*123*", "11123111", true},
+		{"?123?", "11231", true},
+		{"?123*", "112333", true},
+		{"??123*", "1112333", true},
+		{"*123??", "1112335", true},
+		{"*123??", "11123355", false},
+		{"??123*", "18112333", false},
+	}
+
+	for i, c := range cases {
+		assert.Equal(t, c.expect, match_wildcard(c.input, c.value), "%d", i)
+	}
+}
+
+func testComparition(t *testing.T) {
+	type testcase struct {
+		input	Attribute
+		value	Attribute
+		expect	Relation
+	}
+	var cases = []testcase {
+		{Application, Application, Equal},
+		{NewStringAttr("Adobe"), Any, Subset},
+		{Any, NewStringAttr("Reader"), Superset},
+		{NewStringAttr("9.*"), NewStringAttr("9.3.2"), Superset},
+		{Any, Na, Superset},
+		{NewStringAttr("PalmOS"), Na, Disjoint},
+	}
+
+	for i, c := range cases {
+		assert.Equal(t, c.expect, c.input.Comparison(c.value), "%d", i)
+	}
+}
