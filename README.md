@@ -8,7 +8,7 @@ go get github.com/umisama/go-cpe
 
 ## usage
 Simple example is here:
-```go:
+```go
 // Create new item with Setter functions.
 item1 := cpe.NewItem(
 item1.SetPart(cpe.Application)
