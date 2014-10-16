@@ -204,6 +204,7 @@ func TestNewItemFromWfn(t *testing.T) {
 }
 
 func TestNewItemFromUri(t *testing.T) {
+	// Example1
 	item, err := NewItemFromUri("cpe:/a:microsoft:internet_explorer:8.0.6001:beta")
 	assert.Nil(t, err)
 	if item != nil {
@@ -227,6 +228,10 @@ func TestNewItemFromUri(t *testing.T) {
 		assert.Equal(t, item.TargetSw(), NewStringAttr("win2003"))
 		assert.Equal(t, item.TargetHw(), NewStringAttr("x64"))
 	}
+
+	// Example1'
+	item, err = NewItemFromUri("a:microsoft:internet_explorer:8.0.6001:beta")
+	assert.Error(t, err)
 }
 
 func TestNewItemFromFmt(t *testing.T) {
@@ -241,14 +246,6 @@ func TestNewItemFromFmt(t *testing.T) {
 		assert.Equal(t, item.Update(), NewStringAttr("beta"))
 	}
 
-	// Example1'
-	item, err = NewItemFromFormattedString(`a:microsoft:internet_explorer:8.0.6001:beta:*:*:*:*:*:*`)
-	assert.Error(t, err)
-
-	// Example1''
-	item, err = NewItemFromFormattedString(`cpe:2.3:a:microsoft:internet_explorer:8.0.6001:beta:*:*:*:*`)
-	assert.Error(t, err)
-
 	// Example5
 	item, err = NewItemFromFormattedString(`cpe:2.3:a:foo\\bar:big\$money_2010:*:*:*:*:special:ipod_touch:80gb:*`)
 	assert.Nil(t, err)
@@ -260,4 +257,12 @@ func TestNewItemFromFmt(t *testing.T) {
 		assert.Equal(t, item.TargetSw(), NewStringAttr("ipod_touch"))
 		assert.Equal(t, item.TargetHw(), NewStringAttr("80gb"))
 	}
+
+	// Example1'
+	item, err = NewItemFromFormattedString(`a:microsoft:internet_explorer:8.0.6001:beta:*:*:*:*:*:*`)
+	assert.Error(t, err)
+
+	// Example1''
+	item, err = NewItemFromFormattedString(`cpe:2.3:a:microsoft:internet_explorer:8.0.6001:beta:*:*:*:*`)
+	assert.Error(t, err)
 }
