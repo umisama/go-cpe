@@ -124,19 +124,46 @@ func NewItemFromUri(uri string) (*Item, error) {
 }
 
 func NewItemFromFormattedString(str string) (*Item, error) {
-	return &Item{
-		part:       PartNotSet,
-		vendor:     Any,
-		product:    Any,
-		version:    Any,
-		update:     Any,
-		edition:    Any,
-		language:   Any,
-		sw_edition: Any,
-		target_sw:  Any,
-		target_hw:  Any,
-		other:      Any,
-	}, nil
+	if strings.HasPrefix(str, "cpe:2.3:") {
+		str = strings.TrimPrefix(str, "cpe:2.3:")
+	} else {
+		return nil, cpeerr{reason: err_invalid_wfn}
+	}
+
+	attrs := strings.Split(str, ":")
+	if len(attrs) != 11 {
+		return nil, cpeerr{reason: err_invalid_wfn}
+	}
+
+	item := NewItem()
+	for i, attr := range attrs {
+		switch i {
+		case 0:
+			item.part = NewPartAttrFromFmtEncoded(attr)
+		case 1:
+			item.vendor = NewStringAttrFromFmtEncoded(attr)
+		case 2:
+			item.product = NewStringAttrFromFmtEncoded(attr)
+		case 3:
+			item.version = NewStringAttrFromFmtEncoded(attr)
+		case 4:
+			item.update = NewStringAttrFromFmtEncoded(attr)
+		case 5:
+			item.edition = NewStringAttrFromFmtEncoded(attr)
+		case 6:
+			item.language = NewStringAttrFromFmtEncoded(attr)
+		case 7:
+			item.sw_edition = NewStringAttrFromFmtEncoded(attr)
+		case 8:
+			item.target_sw = NewStringAttrFromFmtEncoded(attr)
+		case 9:
+			item.target_hw = NewStringAttrFromFmtEncoded(attr)
+		case 10:
+			item.other = NewStringAttrFromFmtEncoded(attr)
+		}
+	}
+
+	return item, nil
 }
 
 func (m *Item) Wfn() string {

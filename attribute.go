@@ -62,6 +62,22 @@ func NewPartAttrFromUriEncoded(str string) PartAttr {
 	return PartNotSet
 }
 
+func NewPartAttrFromFmtEncoded(str string) PartAttr {
+	if len(str) != 1 {
+		return PartNotSet
+	}
+
+	switch PartAttr(str[0]) {
+	case Application:
+		return Application
+	case OperationgSystem:
+		return OperationgSystem
+	case Hardware:
+		return Hardware
+	}
+	return PartNotSet
+}
+
 func (m PartAttr) String() string {
 	if m.IsValid() {
 		return string(m)
@@ -120,6 +136,17 @@ func NewStringAttrFromUriEncoded(str string) StringAttr {
 	}
 	return StringAttr{
 		raw: url_encoder.Decode(str),
+	}
+}
+
+func NewStringAttrFromFmtEncoded(str string) StringAttr {
+	if str == "-" {
+		return Na
+	} else if str == "*" {
+		return Any
+	}
+	return StringAttr{
+		raw: fmt_encoder.Decode(str),
 	}
 }
 

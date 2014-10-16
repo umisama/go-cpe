@@ -228,3 +228,36 @@ func TestNewItemFromUri(t *testing.T) {
 		assert.Equal(t, item.TargetHw(), NewStringAttr("x64"))
 	}
 }
+
+func TestNewItemFromFmt(t *testing.T) {
+	// Example1
+	item, err := NewItemFromFormattedString(`cpe:2.3:a:microsoft:internet_explorer:8.0.6001:beta:*:*:*:*:*:*`)
+	assert.Nil(t, err)
+	if item != nil {
+		assert.Equal(t, item.Part(), Application)
+		assert.Equal(t, item.Vendor(), NewStringAttr("microsoft"))
+		assert.Equal(t, item.Product(), NewStringAttr("internet_explorer"))
+		assert.Equal(t, item.Version(), NewStringAttr("8.0.6001"))
+		assert.Equal(t, item.Update(), NewStringAttr("beta"))
+	}
+
+	// Example1'
+	item, err = NewItemFromFormattedString(`a:microsoft:internet_explorer:8.0.6001:beta:*:*:*:*:*:*`)
+	assert.Error(t, err)
+
+	// Example1''
+	item, err = NewItemFromFormattedString(`cpe:2.3:a:microsoft:internet_explorer:8.0.6001:beta:*:*:*:*`)
+	assert.Error(t, err)
+
+	// Example5
+	item, err = NewItemFromFormattedString(`cpe:2.3:a:foo\\bar:big\$money_2010:*:*:*:*:special:ipod_touch:80gb:*`)
+	assert.Nil(t, err)
+	if item != nil {
+		assert.Equal(t, item.Part(), Application)
+		assert.Equal(t, item.Vendor(), NewStringAttr("foo\\bar"))
+		assert.Equal(t, item.Product(), NewStringAttr("big$money_2010"))
+		assert.Equal(t, item.SwEdition(), NewStringAttr("special"))
+		assert.Equal(t, item.TargetSw(), NewStringAttr("ipod_touch"))
+		assert.Equal(t, item.TargetHw(), NewStringAttr("80gb"))
+	}
+}
