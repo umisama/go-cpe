@@ -1,4 +1,4 @@
-# umisama/go-cpe
+# umisama/go-cpe [![Build Status](https://travis-ci.org/umisama/go-cpe.svg)](https://travis-ci.org/umisama/go-cpe)
 A Common Platform Enumeration 2.3 implementation for golang.
 
 ## reference
