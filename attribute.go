@@ -114,6 +114,7 @@ func (m PartAttr) IsEmpty() bool {
 	return m == PartNotSet
 }
 
+// NewStringAttr returns attribute of item with str.
 func NewStringAttr(str string) StringAttr {
 	return StringAttr{
 		raw: str,
