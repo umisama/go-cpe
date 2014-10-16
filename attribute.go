@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// Attribute groups PartAttr and StringAttr.
 type Attribute interface {
 	WFNEncoded() string
 	UrlEncoded() string
@@ -14,8 +15,10 @@ type Attribute interface {
 	IsValid() bool
 }
 
+// PartAttr reprecents part attribute of cpe item.
 type PartAttr rune
 
+// StringAttr reprecents other than part attribute of cpe item.
 type StringAttr struct {
 	raw  string
 	isNa bool

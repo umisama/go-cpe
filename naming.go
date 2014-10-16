@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// Item reprecents a CPE item.
 type Item struct {
 	part       PartAttr
 	vendor     StringAttr
@@ -19,6 +20,7 @@ type Item struct {
 	other      StringAttr
 }
 
+// NewItem returns empty Item.
 func NewItem() *Item {
 	return &Item{
 		part:       PartNotSet,
@@ -166,6 +168,7 @@ func NewItemFromFormattedString(str string) (*Item, error) {
 	return item, nil
 }
 
+// Wfn returns a string of Well-Formed string data model.
 func (m *Item) Wfn() string {
 	wfn := "wfn:["
 	first := true
@@ -200,6 +203,7 @@ func (m *Item) Wfn() string {
 	return wfn
 }
 
+// Wfn returns a string of uri binding.
 func (m *Item) Uri() string {
 	uri := "cpe:/"
 
@@ -240,6 +244,7 @@ func (m *Item) Uri() string {
 	return strings.TrimRight(uri, ":*")
 }
 
+// Wfn returns a formatted string binding.
 func (m *Item) Formatted() string {
 	fmted := "cpe:2.3"
 
@@ -256,6 +261,7 @@ func (m *Item) Formatted() string {
 	return fmted
 }
 
+// SetPart sets part of item.  returns error if p is invalid.
 func (i *Item) SetPart(p PartAttr) error {
 	if !p.IsValid() {
 		return cpeerr{reason: err_invalid_type, attr: []interface{}{p, "part"}}
@@ -265,10 +271,12 @@ func (i *Item) SetPart(p PartAttr) error {
 	return nil
 }
 
+// Part returns part of item.
 func (i *Item) Part() PartAttr {
 	return i.part
 }
 
+// SetVendor sets vendor of item.  returns error if s is invalid.
 func (i *Item) SetVendor(s StringAttr) error {
 	if !s.IsValid() {
 		return cpeerr{reason: err_invalid_attribute_str}
@@ -278,10 +286,12 @@ func (i *Item) SetVendor(s StringAttr) error {
 	return nil
 }
 
+// Vendor returns vendor of item.
 func (i *Item) Vendor() StringAttr {
 	return i.vendor
 }
 
+// SetProduct sets vendor of item.  returns error if s is invalid.
 func (i *Item) SetProduct(s StringAttr) error {
 	if !s.IsValid() {
 		return cpeerr{reason: err_invalid_attribute_str}
@@ -291,10 +301,12 @@ func (i *Item) SetProduct(s StringAttr) error {
 	return nil
 }
 
+// Vendor returns product of item.
 func (i *Item) Product() StringAttr {
 	return i.product
 }
 
+// SetVersion sets version of item.  returns error if s is invalid.
 func (i *Item) SetVersion(s StringAttr) error {
 	if !s.IsValid() {
 		return cpeerr{reason: err_invalid_attribute_str}
@@ -304,10 +316,12 @@ func (i *Item) SetVersion(s StringAttr) error {
 	return nil
 }
 
+// Version returns version of item.
 func (i *Item) Version() StringAttr {
 	return i.version
 }
 
+// SetUpdate sets update of item.  returns error if s is invalid.
 func (i *Item) SetUpdate(s StringAttr) error {
 	if !s.IsValid() {
 		return cpeerr{reason: err_invalid_attribute_str}
@@ -317,10 +331,12 @@ func (i *Item) SetUpdate(s StringAttr) error {
 	return nil
 }
 
+// Update returns update of item.
 func (i *Item) Update() StringAttr {
 	return i.update
 }
 
+// SetEdition sets edition of item.  returns error if s is invalid.
 func (i *Item) SetEdition(s StringAttr) error {
 	if !s.IsValid() {
 		return cpeerr{reason: err_invalid_attribute_str}
@@ -330,10 +346,12 @@ func (i *Item) SetEdition(s StringAttr) error {
 	return nil
 }
 
+// Edition returns edition of item.
 func (i *Item) Edition() StringAttr {
 	return i.edition
 }
 
+// SetLanguage sets language of item.  returns error if s is invalid.
 func (i *Item) SetLanguage(s StringAttr) error {
 	if !s.IsValid() {
 		return cpeerr{reason: err_invalid_attribute_str}
@@ -343,10 +361,12 @@ func (i *Item) SetLanguage(s StringAttr) error {
 	return nil
 }
 
+// Language returns language of item.
 func (i *Item) Language() StringAttr {
 	return i.language
 }
 
+// SetSwEdition sets sw_edition of item.  returns error if s is invalid.
 func (i *Item) SetSwEdition(s StringAttr) error {
 	if !s.IsValid() {
 		return cpeerr{reason: err_invalid_attribute_str}
@@ -356,10 +376,13 @@ func (i *Item) SetSwEdition(s StringAttr) error {
 	return nil
 }
 
+// SwEdition returns sw_edition of item.
 func (i *Item) SwEdition() StringAttr {
 	return i.sw_edition
 }
 
+
+// SetTargetSw sets target_sw of item.  returns error if s is invalid.
 func (i *Item) SetTargetSw(s StringAttr) error {
 	if !s.IsValid() {
 		return cpeerr{reason: err_invalid_attribute_str}
@@ -369,10 +392,12 @@ func (i *Item) SetTargetSw(s StringAttr) error {
 	return nil
 }
 
+// TargetSw returns target_sw of item.
 func (i *Item) TargetSw() StringAttr {
 	return i.target_sw
 }
 
+// SetTargetHw sets target_hw of item.  returns error if s is invalid.
 func (i *Item) SetTargetHw(s StringAttr) error {
 	if !s.IsValid() {
 		return cpeerr{reason: err_invalid_attribute_str}
@@ -382,10 +407,12 @@ func (i *Item) SetTargetHw(s StringAttr) error {
 	return nil
 }
 
+// TargetHw returns target_hw of item.
 func (i *Item) TargetHw() StringAttr {
 	return i.target_hw
 }
 
+// SetOther sets other of item.  returns error if s is invalid.
 func (i *Item) SetOther(s StringAttr) error {
 	if !s.IsValid() {
 		return cpeerr{reason: err_invalid_attribute_str}
@@ -395,6 +422,7 @@ func (i *Item) SetOther(s StringAttr) error {
 	return nil
 }
 
+// Other returns other of item.
 func (i *Item) Other() StringAttr {
 	return i.other
 }
