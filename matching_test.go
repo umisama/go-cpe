@@ -70,3 +70,30 @@ func TestCheckSuperset(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, false, CheckSuperset(i1, i2))
 }
+
+func BenchmarkSuperset(b *testing.B) {
+	item1, _ := NewItemFromUri("cpe:/a:microsoft:internet_explorer:8.0.6001:beta")
+	item2, _ := NewItemFromUri("cpe:/a:microsoft:internet_explorer:8.0.6001:beta")
+	b.ResetTimer()
+	for i:=0; i< b.N; i++ {
+		CheckSuperset(item1, item2)
+	}
+}
+
+func BenchmarkSubset(b *testing.B) {
+	item1, _ := NewItemFromUri("cpe:/a:microsoft:internet_explorer:8.0.6001:beta")
+	item2, _ := NewItemFromUri("cpe:/a:microsoft:internet_explorer:8.0.6001:beta")
+	b.ResetTimer()
+	for i:=0; i< b.N; i++ {
+		CheckSubset(item1, item2)
+	}
+}
+
+func BenchmarkEqual(b *testing.B) {
+	item1, _ := NewItemFromUri("cpe:/a:microsoft:internet_explorer:8.0.6001:beta")
+	item2, _ := NewItemFromUri("cpe:/a:microsoft:internet_explorer:8.0.6001:beta")
+	b.ResetTimer()
+	for i:=0; i< b.N; i++ {
+		CheckEqual(item1, item2)
+	}
+}

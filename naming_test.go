@@ -266,3 +266,21 @@ func TestNewItemFromFmt(t *testing.T) {
 	item, err = NewItemFromFormattedString(`cpe:2.3:a:microsoft:internet_explorer:8.0.6001:beta:*:*:*:*`)
 	assert.Error(t, err)
 }
+
+func BenchmarkNewItemFromUri(b *testing.B) {
+	for i:=0; i< b.N; i++ {
+		NewItemFromUri("cpe:/a:microsoft:internet_explorer:8.0.6001:beta")
+	}
+}
+
+func BenchmarkNewItemFromWfn(b *testing.B) {
+	for i:=0; i< b.N; i++ {
+		NewItemFromWfn(`wfn:[part="a",vendor="microsoft",product="internet_explorer",version="8\.0\.6001",update="beta",edition=NA]`)
+	}
+}
+
+func BenchmarkNewItemFromFormattedString(b *testing.B) {
+	for i:=0; i< b.N; i++ {
+		NewItemFromFormattedString(`cpe:2.3:a:microsoft:internet_explorer:8.0.6001:beta:*:*:*:*:*:*`)
+	}
+}
