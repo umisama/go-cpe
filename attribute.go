@@ -216,12 +216,13 @@ func (s StringAttr) IsEmpty() bool {
 	return s.raw == "" && !s.isNa
 }
 
+var stringAttrIsValidRegExp = regexp.MustCompile("\\A(\\*|\\?+){0,1}[a-zA-Z0-9\\-_!\"#$%&'()+,./:;<=>@\\[\\]^`{}\\|~\\\\]+(\\*|\\?+){0,1}$")
 func (s StringAttr) IsValid() bool {
 	if s.isNa && len(s.raw) != 0 {
 		return false
 	}
 
-	if regexp.MustCompile("\\A(\\*|\\?+){0,1}[a-zA-Z0-9\\-_!\"#$%&'()+,./:;<=>@\\[\\]^`{}\\|~\\\\]+(\\*|\\?+){0,1}$").FindString(s.raw) != s.raw {
+	if stringAttrIsValidRegExp.FindString(s.raw) != s.raw {
 		return false
 	}
 
