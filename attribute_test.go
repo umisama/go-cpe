@@ -105,7 +105,7 @@ func TestMatchWildcard(t *testing.T) {
 		value  string
 		expect bool
 	}
-	var cases = []testcase {
+	var cases = []testcase{
 		{"*123", "11123", true},
 		{"*123", "11123a", false},
 		{"123*", "12311", true},
@@ -133,11 +133,11 @@ func TestMatchWildcard(t *testing.T) {
 
 func testComparition(t *testing.T) {
 	type testcase struct {
-		input	Attribute
-		value	Attribute
-		expect	Relation
+		input  Attribute
+		value  Attribute
+		expect Relation
 	}
-	var cases = []testcase {
+	var cases = []testcase{
 		{Application, Application, Equal},
 		{NewStringAttr("Adobe"), Any, Subset},
 		{Any, NewStringAttr("Reader"), Superset},
@@ -148,5 +148,13 @@ func testComparition(t *testing.T) {
 
 	for i, c := range cases {
 		assert.Equal(t, c.expect, c.input.Comparison(c.value), "%d", i)
+	}
+}
+
+func BenchmarkStringAttrComparison(b *testing.B) {
+	sa1 := NewStringAttr("hellohellohellohello")
+	sa2 := NewStringAttr("worldworldworldworld")
+	for i := 0; i < b.N; i++ {
+		sa1.Comparison(sa2)
 	}
 }

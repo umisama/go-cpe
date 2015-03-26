@@ -217,6 +217,7 @@ func (s StringAttr) IsEmpty() bool {
 }
 
 var stringAttrIsValidRegExp = regexp.MustCompile("\\A(\\*|\\?+){0,1}[a-zA-Z0-9\\-_!\"#$%&'()+,./:;<=>@\\[\\]^`{}\\|~\\\\]+(\\*|\\?+){0,1}$")
+
 func (s StringAttr) IsValid() bool {
 	if s.isNa && len(s.raw) != 0 {
 		return false
@@ -268,7 +269,7 @@ func (src StringAttr) Comparison(trg Attribute) Relation {
 			return Disjoint
 		} else if trg_str.withWildCard() {
 			return Undefined
-		} else if match_wildcard(src.String(), trg_str.String()) {
+		} else if match_wildcard(src.raw, trg_str.raw) {
 			return Superset
 		}
 		return Disjoint
@@ -279,7 +280,7 @@ func (src StringAttr) Comparison(trg Attribute) Relation {
 			return Disjoint
 		} else if trg_str.withWildCard() {
 			return Undefined
-		} else if trg_str.String() == src.String() {
+		} else if trg_str.raw == src.raw {
 			return Equal
 		}
 		return Disjoint
@@ -289,7 +290,8 @@ func (src StringAttr) Comparison(trg Attribute) Relation {
 }
 
 func (m StringAttr) withWildCard() bool {
-	return strings.HasPrefix(m.String(), "*") || strings.HasSuffix(m.String(), "*") || strings.HasPrefix(m.String(), "?") || strings.HasSuffix(m.String(), "?")
+	prefix, suffix := m.raw[0], m.raw[len(m.raw)-1]
+	return prefix == '*' || prefix == '?' || suffix == '*' || suffix == '?'
 }
 
 func match_wildcard(src, trg string) bool {
