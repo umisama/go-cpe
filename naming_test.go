@@ -1,8 +1,9 @@
 package cpe
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 // from 5.5 WFN Example @ NISTIR-7695-CPE-Naming
@@ -258,6 +259,17 @@ func TestNewItemFromFmt(t *testing.T) {
 		assert.Equal(t, item.TargetHw(), NewStringAttr("80gb"))
 	}
 
+	item, err = NewItemFromFormattedString(`cpe:2.3:a:xt-commerce:xt\\:commerce:*:*:*:*:*:*:*:*`)
+	assert.Nil(t, err)
+	if item != nil {
+		assert.Equal(t, item.Part(), Application)
+		assert.Equal(t, item.Vendor(), NewStringAttr("xt-commerce"))
+		assert.Equal(t, item.Product(), NewStringAttr("xt:commerce"))
+		assert.Equal(t, item.SwEdition(), NewStringAttr(""))
+		assert.Equal(t, item.TargetSw(), NewStringAttr(""))
+		assert.Equal(t, item.TargetHw(), NewStringAttr(""))
+	}
+
 	// Example1'
 	item, err = NewItemFromFormattedString(`a:microsoft:internet_explorer:8.0.6001:beta:*:*:*:*:*:*`)
 	assert.Error(t, err)
@@ -265,22 +277,23 @@ func TestNewItemFromFmt(t *testing.T) {
 	// Example1''
 	item, err = NewItemFromFormattedString(`cpe:2.3:a:microsoft:internet_explorer:8.0.6001:beta:*:*:*:*`)
 	assert.Error(t, err)
+
 }
 
 func BenchmarkNewItemFromUri(b *testing.B) {
-	for i:=0; i< b.N; i++ {
+	for i := 0; i < b.N; i++ {
 		NewItemFromUri("cpe:/a:microsoft:internet_explorer:8.0.6001:beta")
 	}
 }
 
 func BenchmarkNewItemFromWfn(b *testing.B) {
-	for i:=0; i< b.N; i++ {
+	for i := 0; i < b.N; i++ {
 		NewItemFromWfn(`wfn:[part="a",vendor="microsoft",product="internet_explorer",version="8\.0\.6001",update="beta",edition=NA]`)
 	}
 }
 
 func BenchmarkNewItemFromFormattedString(b *testing.B) {
-	for i:=0; i< b.N; i++ {
+	for i := 0; i < b.N; i++ {
 		NewItemFromFormattedString(`cpe:2.3:a:microsoft:internet_explorer:8.0.6001:beta:*:*:*:*:*:*`)
 	}
 }
