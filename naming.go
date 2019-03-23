@@ -37,6 +37,8 @@ func NewItem() *Item {
 	}
 }
 
+var goCpeOriginalDelim = "[goCpeOriginalDelim]"
+
 func NewItemFromWfn(wfn string) (*Item, error) {
 	if strings.HasPrefix(wfn, "wfn:[") {
 		wfn = strings.TrimPrefix(wfn, "wfn:[")
@@ -127,7 +129,7 @@ func NewItemFromUri(uri string) (*Item, error) {
 
 func NewItemFromFormattedString(str string) (*Item, error) {
 	if strings.HasPrefix(str, "cpe:2.3:") {
-		str = strings.TrimPrefix(str, "cpe:2.3:")
+		str = replaceToDelim(strings.TrimPrefix(str, "cpe:2.3:"))
 	} else {
 		return nil, cpeerr{reason: err_invalid_wfn}
 	}
@@ -141,27 +143,27 @@ func NewItemFromFormattedString(str string) (*Item, error) {
 	for i, attr := range attrs {
 		switch i {
 		case 0:
-			item.part = newPartAttrFromFmtEncoded(attr)
+			item.part = newPartAttrFromFmtEncoded(replaceFromDelim(attr))
 		case 1:
-			item.vendor = newStringAttrFromFmtEncoded(attr)
+			item.vendor = newStringAttrFromFmtEncoded(replaceFromDelim(attr))
 		case 2:
-			item.product = newStringAttrFromFmtEncoded(attr)
+			item.product = newStringAttrFromFmtEncoded(replaceFromDelim(attr))
 		case 3:
-			item.version = newStringAttrFromFmtEncoded(attr)
+			item.version = newStringAttrFromFmtEncoded(replaceFromDelim(attr))
 		case 4:
-			item.update = newStringAttrFromFmtEncoded(attr)
+			item.update = newStringAttrFromFmtEncoded(replaceFromDelim(attr))
 		case 5:
-			item.edition = newStringAttrFromFmtEncoded(attr)
+			item.edition = newStringAttrFromFmtEncoded(replaceFromDelim(attr))
 		case 6:
-			item.language = newStringAttrFromFmtEncoded(attr)
+			item.language = newStringAttrFromFmtEncoded(replaceFromDelim(attr))
 		case 7:
-			item.sw_edition = newStringAttrFromFmtEncoded(attr)
+			item.sw_edition = newStringAttrFromFmtEncoded(replaceFromDelim(attr))
 		case 8:
-			item.target_sw = newStringAttrFromFmtEncoded(attr)
+			item.target_sw = newStringAttrFromFmtEncoded(replaceFromDelim(attr))
 		case 9:
-			item.target_hw = newStringAttrFromFmtEncoded(attr)
+			item.target_hw = newStringAttrFromFmtEncoded(replaceFromDelim(attr))
 		case 10:
-			item.other = newStringAttrFromFmtEncoded(attr)
+			item.other = newStringAttrFromFmtEncoded(replaceFromDelim(attr))
 		}
 	}
 
@@ -381,7 +383,6 @@ func (i *Item) SwEdition() StringAttr {
 	return i.sw_edition
 }
 
-
 // SetTargetSw sets target_sw of item.  returns error if s is invalid.
 func (i *Item) SetTargetSw(s StringAttr) error {
 	if !s.IsValid() {
@@ -425,6 +426,14 @@ func (i *Item) SetOther(s StringAttr) error {
 // Other returns other of item.
 func (i *Item) Other() StringAttr {
 	return i.other
+}
+
+func replaceToDelim(str string) string {
+	return strings.Replace(str, "\\:", goCpeOriginalDelim, -1)
+}
+
+func replaceFromDelim(str string) string {
+	return strings.Replace(str, goCpeOriginalDelim, "\\:", -1)
 }
 
 type cpeerr struct {
